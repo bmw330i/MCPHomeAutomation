@@ -3,20 +3,31 @@
     "ansible-mcp-server": {
       "command": "node",
       "args": ["ansible-mcp-server/index.mjs"],
-      "cwd": "/path/to/MCPHomeAutomation",
+      "cwd": "/Users/david/Documents/MCPHomeAutomation",
       "env": {
         "ANSIBLE_HOST_KEY_CHECKING": "False",
-        "ANSIBLE_INVENTORY": "/path/to/inventory.ini",
-        "ANSIBLE_BASE_PATH": "/path/to/ansible/directory"
+        "ANSIBLE_INVENTORY": "/Users/david/Documents/MCPHomeAutomation/inventory.ini",
+        "ANSIBLE_BASE_PATH": "/Users/david/Documents/MCPHomeAutomation"
       }
     },
     "ansible-ssh-decider": {
       "command": "node",
       "args": ["ansible-ssh-decider/index.mjs"],
-      "cwd": "/path/to/MCPHomeAutomation",
+      "cwd": "/Users/david/Documents/MCPHomeAutomation",
       "env": {
-        "ANSIBLE_INVENTORY": "/path/to/inventory.ini",
-        "SSH_TOOLS_PATH": "/path/to/ssh-tools.sh"
+        "ANSIBLE_INVENTORY": "/Users/david/Documents/MCPHomeAutomation/inventory.ini",
+        "SSH_TOOLS_PATH": "/Users/david/Documents/MCPHomeAutomation/ssh-tools.sh"
+      }
+    },
+    "documents-mcp-server": {
+      "command": "node",
+      "args": ["documents-mcp-server/index.mjs"],
+      "cwd": "/Users/david/Documents/MCPHomeAutomation",
+      "env": {
+        "DOCUMENTS_SERVER_NAME": "documents-mcp-server",
+        "DOCUMENTS_SERVER_VERSION": "1.0.0",
+        "MAX_DOCUMENT_SIZE": "10485760",
+        "LOG_LEVEL": "info"
       }
     }
   }
