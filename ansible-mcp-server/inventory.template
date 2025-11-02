@@ -6,10 +6,16 @@
 ${OPENWRT_HOST} ansible_python_interpreter=${OPENWRT_PYTHON_INTERPRETER} ansible_user=${OPENWRT_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_connection=ssh ansible_ssh_port=${OPENWRT_SSH_PORT}
 
 [macpro]
-${MACPRO_HOST} ansible_user=${MACPRO_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_ssh_port=${MACPRO_SSH_PORT} ansible_become_pass=@vault:${MACPRO_BECOME_PASS_VAULT_ID}
+${MACPRO_HOST} ansible_user=${MACPRO_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_ssh_port=${MACPRO_SSH_PORT} ansible_become_pass=${MACPRO_BECOME_PASS_VAULT_ID}
 
 [rpi5]
 ${RPI5_HOST} ansible_user=${RPI5_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_connection=ssh ansible_ssh_port=${RPI5_SSH_PORT}
 
 [linode]
 ${LINODE_HOST} ansible_user=${LINODE_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_connection=ssh ansible_ssh_port=${LINODE_SSH_PORT}
+
+[mini]
+${MINI_HOST} ansible_user=${MINI_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_ssh_port=${MINI_SSH_PORT} ansible_become_pass=${MINI_BECOME_PASS_VAULT_ID}
+
+[lilygo]
+lilygo-tdisplay ansible_connection=local ansible_device_path=/dev/cu.usbmodem21101 ansible_device_type=esp32s3
