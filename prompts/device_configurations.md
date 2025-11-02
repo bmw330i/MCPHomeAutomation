@@ -5,10 +5,10 @@ This document contains configuration details and setup procedures for various ho
 ## Device Inventory
 
 ### Mac Pro (Primary Server)
-- **IP**: [REDACTED]
+- **IP**: YOUR_DEVICE_IP
 - **OS**: Debian Linux
 - **SSH Port**: 2220
-- **User**: [REDACTED]
+- **User**: YOUR_USERNAME
 - **Role**: Media server, deduplication processing, MongoDB host
 - **Storage**:
   - 11TB APFS1 (read-only mount)
@@ -17,34 +17,34 @@ This document contains configuration details and setup procedures for various ho
 - **Services**: Jellyfin, MongoDB 8.0, deduplication workers
 
 ### Mac Mini M4 (Development Workstation)
-- **IP**: [REDACTED]
+- **IP**: YOUR_DEVICE_IP
 - **OS**: macOS
 - **Role**: Development workstation, MCP server host
 - **Services**: Mosquitto MQTT broker, development environment
 
 ### Raspberry Pi 5 (IoT Hub)
-- **IP**: [REDACTED]
+- **IP**: YOUR_DEVICE_IP
 - **OS**: Raspberry Pi OS
 - **Role**: Home automation, monitoring, edge computing
 
 ### OpenWrt Router (Network Gateway)
-- **IP**: [REDACTED]
+- **IP**: YOUR_ROUTER_IP
 - **OS**: OpenWrt
 - **Role**: Routing, firewall, ad-blocking, WiFi management
 - **WiFi**: Configurable SSID and password
 - **LAN**: 192.168.1.1/24 network
 
 ### Linode VPS (Cloud Services)
-- **IP**: [REDACTED]
+- **IP**: YOUR_VPS_IP
 - **OS**: Ubuntu Linux
 - **Role**: Remote access, web services, backup storage
 
 ## Configuration Procedures
 
 ### OpenWrt Router Setup
-1. Access router at [REDACTED]
+1. Access router at YOUR_ROUTER_IP
 2. Configure WiFi with desired SSID and WPA2 password
-3. Set LAN IP to [REDACTED]
+3. Set LAN IP to YOUR_LAN_IP
 4. Enable ad-blocking services
 5. Configure firewall rules
 
@@ -79,7 +79,7 @@ ANSIBLE_INVENTORY=/path/to/inventory.ini
 ANSIBLE_BASE_PATH=/path/to/ansible/directory
 
 # SSH MCP Server
-SSH_USER=[REDACTED]
+SSH_USER=YOUR_USERNAME
 SSH_PORT=2220
 SSH_KEY_PATH=~/.ssh/id_rsa
 
