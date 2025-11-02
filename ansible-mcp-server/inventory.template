@@ -1,0 +1,15 @@
+# Ansible Inventory Template
+# This file uses environment variables - DO NOT COMMIT ACTUAL VALUES
+# Use ansible-vault for sensitive passwords
+
+[openwrt]
+${OPENWRT_HOST} ansible_python_interpreter=${OPENWRT_PYTHON_INTERPRETER} ansible_user=${OPENWRT_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_connection=ssh ansible_ssh_port=${OPENWRT_SSH_PORT}
+
+[macpro]
+${MACPRO_HOST} ansible_user=${MACPRO_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_ssh_port=${MACPRO_SSH_PORT} ansible_become_pass=@vault:${MACPRO_BECOME_PASS_VAULT_ID}
+
+[rpi5]
+${RPI5_HOST} ansible_user=${RPI5_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_connection=ssh ansible_ssh_port=${RPI5_SSH_PORT}
+
+[linode]
+${LINODE_HOST} ansible_user=${LINODE_USER} ansible_ssh_private_key_file=${ANSIBLE_SSH_KEY_PATH} ansible_connection=ssh ansible_ssh_port=${LINODE_SSH_PORT}

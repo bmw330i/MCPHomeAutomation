@@ -1,0 +1,41 @@
+{
+  "name": "ansible-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for managing home network devices and services via Ansible",
+  "type": "module",
+  "main": "index.mjs",
+  "scripts": {
+    "start": "node index.mjs",
+    "dev": "node --watch index.mjs",
+    "generate-inventory": "node generate-inventory.mjs",
+    "setup": "npm run generate-inventory",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mcp",
+    "ansible",
+    "home-automation",
+    "network-management",
+    "openwrt",
+    "raspberry-pi"
+  ],
+  "author": "david",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0",
+    "yaml": "^2.4.5",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "mcp": {
+    "server": {
+      "name": "ansible-mcp-server",
+      "version": "1.0.0"
+    }
+  }
+}

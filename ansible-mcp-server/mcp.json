@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ansible-mcp-server": {
+      "command": "node",
+      "args": ["index.mjs"],
+      "cwd": ".",
+      "env": {
+        "ANSIBLE_HOST_KEY_CHECKING": "False",
+        "ANSIBLE_INVENTORY": "../inventory.ini"
+      }
+    }
+  }
+}

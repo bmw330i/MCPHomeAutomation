@@ -1,0 +1,16 @@
+{
+  "name": "ansible-ssh-decider",
+  "version": "1.0.0",
+  "description": "MCP server that decides between Ansible and SSH for executing commands based on operation type",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.4.0"
+  },
+  "keywords": ["mcp", "ansible", "ssh", "automation"],
+  "author": "GitHub Copilot",
+  "license": "MIT"
+}

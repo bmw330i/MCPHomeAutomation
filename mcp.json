@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "ansible-mcp-server": {
+      "command": "node",
+      "args": ["ansible-mcp-server/index.mjs"],
+      "cwd": "/path/to/MCPHomeAutomation",
+      "env": {
+        "ANSIBLE_HOST_KEY_CHECKING": "False",
+        "ANSIBLE_INVENTORY": "/path/to/inventory.ini",
+        "ANSIBLE_BASE_PATH": "/path/to/ansible/directory"
+      }
+    },
+    "ansible-ssh-decider": {
+      "command": "node",
+      "args": ["ansible-ssh-decider/index.mjs"],
+      "cwd": "/path/to/MCPHomeAutomation",
+      "env": {
+        "ANSIBLE_INVENTORY": "/path/to/inventory.ini",
+        "SSH_TOOLS_PATH": "/path/to/ssh-tools.sh"
+      }
+    }
+  }
+}
