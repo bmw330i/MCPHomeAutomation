@@ -1,0 +1,22 @@
+# Ansible Inventory Template
+# This file uses environment variables - DO NOT COMMIT ACTUAL VALUES
+# Use ansible-vault for sensitive passwords
+# Copy this file to inventory.ini and replace with your actual values
+
+[openwrt]
+YOUR_OPENWRT_IP ansible_python_interpreter=/usr/bin/python3.11 ansible_user=root ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_connection=ssh ansible_ssh_port=2220
+
+[macpro]
+YOUR_MACPRO_IP ansible_user=YOUR_USERNAME ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_ssh_port=2220 ansible_become_pass=YOUR_SUDO_PASSWORD
+
+[rpi5]
+YOUR_RPI5_IP ansible_user=YOUR_USERNAME ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_connection=ssh ansible_ssh_port=2220
+
+[linode]
+YOUR_LINODE_IP ansible_user=YOUR_USERNAME ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_connection=ssh ansible_ssh_port=2220
+
+[mini]
+YOUR_MINI_IP ansible_user=YOUR_USERNAME ansible_ssh_private_key_file=~/.ssh/id_rsa ansible_ssh_port=2220 ansible_become_pass=YOUR_SUDO_PASSWORD
+
+[lilygo]
+lilygo-tdisplay ansible_connection=local ansible_device_path=/dev/cu.usbmodem21101 ansible_device_type=esp32s3

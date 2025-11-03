@@ -6,7 +6,7 @@
       "cwd": "/Users/david/Documents/MCPHomeAutomation",
       "env": {
         "ANSIBLE_HOST_KEY_CHECKING": "False",
-        "ANSIBLE_INVENTORY": "/Users/david/Documents/MCPHomeAutomation/inventory.ini",
+        "ANSIBLE_INVENTORY": "/Users/david/Documents/MCPHomeAutomation/ansible-mcp-server/inventory.ini",
         "ANSIBLE_BASE_PATH": "/Users/david/Documents/MCPHomeAutomation"
       }
     },
@@ -15,7 +15,7 @@
       "args": ["ansible-ssh-decider/index.mjs"],
       "cwd": "/Users/david/Documents/MCPHomeAutomation",
       "env": {
-        "ANSIBLE_INVENTORY": "/Users/david/Documents/MCPHomeAutomation/inventory.ini",
+        "ANSIBLE_INVENTORY": "/Users/david/Documents/MCPHomeAutomation/ansible-mcp-server/inventory.ini",
         "SSH_TOOLS_PATH": "/Users/david/Documents/MCPHomeAutomation/ssh-tools.sh"
       }
     },

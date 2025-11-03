@@ -6,7 +6,7 @@
       "cwd": ".",
       "env": {
         "ANSIBLE_HOST_KEY_CHECKING": "False",
-        "ANSIBLE_INVENTORY": "../inventory.ini"
+        "ANSIBLE_INVENTORY": "inventory.ini"
       }
     }
   }
