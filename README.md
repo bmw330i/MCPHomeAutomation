@@ -37,9 +37,9 @@ This groundbreaking project demonstrates how **AI assistants can directly manage
         ┌─────────────┼─────────────┐
         │             │             │
 ┌───────▼─────┐ ┌─────▼────┐ ┌──────▼─────┐
-│ 🏠 Network  │ │ 💾 Data   │ │ 📡 IoT      │
-│ Management  │ │ Services │ │ Control     │
-│ (Ansible)   │ │ (MongoDB)│ │ (LoRa)      │
+│ 🏠 Network  │ │ � Smart  │ │ � Secure   │
+│ Management  │ │ Routing  │ │ Documents  │
+│ (Ansible)   │ │ (AI)     │ │ (Read-only) │
 └─────────────┘ └──────────┘ └────────────┘
         │             │             │
         └─────────────┼─────────────┘
@@ -83,24 +83,18 @@ AI Assistant → Natural Language → MCP Protocol → Intelligent Execution
 - **Learning Adaptation**: Improves routing decisions based on success patterns
 - **Unified Interface**: Single AI conversation manages all infrastructure operations
 
-### 💾 **MongoDB MCP Server** - Data Infrastructure AI
-**Intelligent Data Management**
-- **Smart Indexing**: AI optimizes database performance for your specific workloads
-- **Automated Backups**: AI schedules and validates backup integrity
-- **Query Optimization**: AI rewrites queries for maximum performance
-- **Storage Intelligence**: Monitors and optimizes deduplication processes
-
-### 📡 **LoRa MCP Server** - IoT Network Intelligence
-**Wireless Sensor Orchestration**
-- **Mesh Network Optimization**: AI configures optimal LoRa communication paths
-- **Battery Life Intelligence**: AI balances data collection with power efficiency
-- **Predictive Maintenance**: AI anticipates sensor failures and maintenance needs
-- **Data Fusion**: AI correlates sensor data for actionable insights
+### � **Documents MCP Server** - Secure File Access Intelligence
+**AI-Powered Document Management**
+- **Secure Access**: Read-only access to user's Documents folder with path validation
+- **Content Analysis**: AI can read, search, and analyze document contents
+- **Multi-Format Support**: Handles text files, PDFs, and various document types
+- **Privacy Protection**: Prevents directory traversal and enforces access boundaries
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 - **Node.js 18+** - Modern JavaScript runtime
+- **Python 3.8+** - For data processing and PDF handling
 - **Ansible** - Infrastructure automation framework
 - **SSH Keys** - Secure device access
 - **MCP Client** - Claude, VS Code, or compatible AI assistant
@@ -112,8 +106,22 @@ AI Assistant → Natural Language → MCP Protocol → Intelligent Execution
 git clone https://github.com/bmw330i/MCPHomeAutomation.git
 cd MCPHomeAutomation
 
+# Set up Python virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install Python dependencies
+pip install requests python-dotenv sqlalchemy pypdf
+
 # Install AI-powered servers
 npm run install-all
+
+# Configure your environment
+cp .env.sample .env
+# Edit .env with your network settings and Python path
+
+# Verify your setup
+.venv/bin/python scripts/verify_setup.py
 
 # Configure your AI assistant
 cp mcp.json ~/.config/claude/mcp.json
@@ -127,16 +135,16 @@ cp mcp.json ~/.config/claude/mcp.json
 → AI automatically configures OpenWrt router
 ```
 
-**Storage Optimization:**
+**Server Management:**
 ```
-"Optimize my deduplication system for performance"
-→ AI analyzes and tunes MongoDB indexes
+"Check server health across all devices"
+→ AI monitors system status and reports issues
 ```
 
-**IoT Deployment:**
+**Document Analysis:**
 ```
-"Set up LoRa sensors for temperature monitoring"
-→ AI flashes firmware and configures mesh network
+"Read and summarize the project documentation"
+→ AI securely accesses Documents folder and analyzes files
 ```
 
 ## 🔬 Technical Innovation Highlights
@@ -164,6 +172,12 @@ cp mcp.json ~/.config/claude/mcp.json
 - Network topology self-discovery
 - Configuration backup and restore
 
+### 🤖 **AI-Generated Infrastructure as Code**
+- **Desired State Automation**: AI can analyze current system configurations and generate comprehensive YAML playbooks that capture the complete desired state of each machine
+- **Infrastructure Preservation**: Automatically create Ansible playbooks that can restore servers, routers, and IoT devices to their exact operational state if reformatted or replaced
+- **Living Documentation**: AI-maintained configuration files that evolve with your infrastructure changes, ensuring no manual documentation drift
+- **Zero-Touch Recovery**: Complete system restoration through natural language commands like "restore my Mac Pro to its current state"
+
 ## 📈 Performance & Scale
 
 - **⚡ Sub-Second Response Times**: Optimized for AI conversation flows
@@ -186,15 +200,15 @@ await configureOpenWrtDevice({
 });
 ```
 
-### Intelligent Storage Management
+### Document Access and Analysis
 ```javascript
-// AI understands: "Optimize my deduplication database"
+// AI understands: "Find all project documentation"
 // Translates to:
-await optimizeDeduplicationSystem({
-  analyze_workload: true,
-  rebuild_indexes: true,
-  compact_collections: true,
-  update_statistics: true
+await searchDocuments({
+  query: "project",
+  search_type: "content",
+  path: "documentation",
+  max_results: 20
 });
 ```
 
@@ -214,6 +228,7 @@ This project represents the **future of infrastructure management** - where AI a
 - **[⚙️ Device Configuration Guide](prompts/device_configurations.md)** - Setup procedures
 - **[🤖 AI Assistant Prompts](mcp_system_admin_prompt.md)** - Optimizing AI interactions
 - **[🔄 Migration Strategies](eve_migration_prompt.md)** - Transitioning to AI infrastructure
+- **[💻 Terminal Command Framework](prompts/terminal_command_execution_framework.md)** - When to run commands foreground/background
 
 ## 🏆 Recognition & Impact
 

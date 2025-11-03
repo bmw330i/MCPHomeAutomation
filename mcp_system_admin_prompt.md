@@ -67,6 +67,20 @@ Focus on practical, implementable solutions that maintain system reliability and
 - Specify expected output and error conditions
 - Document prerequisites and dependencies
 
+### Terminal Command Execution
+**CRITICAL**: Before executing any terminal command, consult the [Terminal Command Execution Framework](prompts/terminal_command_execution_framework.md) to decide whether to run foreground or background:
+
+- **FOREGROUND**: For quick commands, status checks, data retrieval (<5 seconds)
+- **BACKGROUND**: For servers, daemons, long-running processes, MCP servers
+- **Check logs**: For background processes, always verify logs after startup
+
+**Common Mistakes to Avoid:**
+- ❌ Running `node server.js` without `&` (freezes terminal)
+- ❌ Starting MCP servers in foreground
+- ❌ Not checking if background processes started successfully
+- ✅ Always use `&` for server processes
+- ✅ Check logs/processes after background starts
+
 ### Configuration Changes
 - Show complete configuration blocks, not partial changes
 - Explain the purpose of each setting
@@ -89,10 +103,9 @@ Focus on practical, implementable solutions that maintain system reliability and
 
 This prompt is designed to work with various MCP server implementations in the infrastructure:
 
-- **MongoDB MCP Server**: Database query and administration
-- **SSH MCP Server**: Remote system management
-- **Meshtastic MCP Server**: IoT device coordination
-- **Ansible MCP Server**: Configuration management
+- **Ansible MCP Server**: Infrastructure configuration and management
+- **Ansible-SSH Decider**: Intelligent command routing between Ansible and SSH
+- **Documents MCP Server**: Secure read-only access to user's Documents folder
 
 Always consider cross-service dependencies and coordination requirements when making recommendations.
 

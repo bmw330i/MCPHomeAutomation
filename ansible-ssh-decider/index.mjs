@@ -10,31 +10,89 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Decision logic: what Ansible is best for vs SSH
-const ANSIBLE_KEYWORDS = [
-  "install", "configure", "remove", "kill", "modify", "change", "update",
-  "create", "delete", "set", "enable", "disable", "restart", "stop", "start",
-  "upgrade", "downgrade", "add", "append", "replace", "backup", "restore",
-  "mount", "unmount", "format", "partition", "service", "systemctl", "apt",
-  "yum", "dnf", "pacman", "brew", "pip", "npm", "gem"
+const SUDO_INDICATORS = [
+  "sudo", "su ", "su -", "become", "--become", "-b", "privileges", "root",
+  "chmod 777", "chmod +x", "chown", "usermod", "groupmod", "passwd",
+  "systemctl", "service ", "init.d", "/etc/", "mount", "umount", "fdisk",
+  "mkfs", "format", "partition"
 ];
 
-const SSH_KEYWORDS = [
+const CONFIG_CHANGE_KEYWORDS = [
+  "install", "remove", "purge", "upgrade", "update", "configure", "setup",
+  "create", "delete", "modify", "change", "set", "enable", "disable",
+  "start", "stop", "restart", "reload", "kill", "add", "append", "replace",
+  "backup", "restore", "mount", "unmount", "format", "mkfs", "fdisk",
+  "apt", "yum", "dnf", "pacman", "brew", "pip", "npm", "gem", "cargo",
+  "wget", "curl.*-O", "git clone", "mkdir", "touch", "echo.*>", "cp ", "mv ",
+  "ln ", "tar ", "unzip", "gunzip", "gzip"
+];
+
+const STATUS_QUERY_KEYWORDS = [
   "status", "show", "list", "get", "check", "monitor", "ps", "top", "df",
   "free", "uptime", "who", "w", "tail", "head", "grep", "find", "ls",
-  "cat", "echo", "date", "hostname", "ifconfig", "ip", "netstat", "ss"
+  "cat", "echo", "date", "hostname", "ifconfig", "ip", "netstat", "ss",
+  "du", "pwd", "id", "whoami", "env", "printenv", "history"
+];
+
+const IDEMPOTENT_OPERATIONS = [
+  "apt", "yum", "dnf", "pacman", "brew", "pip", "npm", "gem",
+  "systemctl", "service", "chkconfig", "update-rc.d",
+  "useradd", "usermod", "groupadd", "groupmod",
+  "mkdir", "touch", "chown", "chmod", "ln -s"
 ];
 
 function shouldUseAnsible(description, command) {
   const text = (description + " " + command).toLowerCase();
+  const cmd = command.toLowerCase();
 
-  // Count matches for each category
-  const ansibleMatches = ANSIBLE_KEYWORDS.filter(keyword => text.includes(keyword)).length;
-  const sshMatches = SSH_KEYWORDS.filter(keyword => text.includes(keyword)).length;
+  // RULE 1: Commands that write to files or modify system state → Ansible (check first!)
+  if (cmd.includes(">") || cmd.includes(">>") || cmd.includes("| tee") ||
+      (cmd.includes("echo") && (cmd.includes(">") || cmd.includes(">>")))) {
+    console.error("Using Ansible: detected file write operation");
+    return true;
+  }
 
-  // If more Ansible keywords, use Ansible
-  if (ansibleMatches > sshMatches) return true;
+  // RULE 2: If command explicitly uses sudo or requires elevated privileges → Ansible
+  for (const indicator of SUDO_INDICATORS) {
+    if (cmd.includes(indicator)) {
+      console.error(`Using Ansible: detected sudo/privilege indicator "${indicator}"`);
+      return true;
+    }
+  }
 
-  // If equal or SSH has more, use SSH
+  // RULE 3: Network operations that might need sudo → Ansible
+  if (cmd.includes("iptables") || cmd.includes("ufw") || cmd.includes("firewall") ||
+      cmd.includes("route") || cmd.includes("ifconfig") || cmd.includes("ip addr")) {
+    console.error("Using Ansible: detected network configuration");
+    return true;
+  }
+
+  // RULE 4: If it's an idempotent package/service management operation → Ansible
+  for (const operation of IDEMPOTENT_OPERATIONS) {
+    if (cmd.includes(operation)) {
+      console.error(`Using Ansible: detected idempotent operation "${operation}"`);
+      return true;
+    }
+  }
+
+  // RULE 5: If it's a configuration change or system modification → Ansible
+  for (const keyword of CONFIG_CHANGE_KEYWORDS) {
+    if (text.includes(keyword)) {
+      console.error(`Using Ansible: detected config change keyword "${keyword}"`);
+      return true;
+    }
+  }
+
+  // RULE 6: If it's clearly a status query or information gathering → SSH
+  for (const keyword of STATUS_QUERY_KEYWORDS) {
+    if (text.includes(keyword)) {
+      console.error(`Using SSH: detected status query keyword "${keyword}"`);
+      return false;
+    }
+  }
+
+  // RULE 7: Default to SSH for simple commands that just return output
+  console.error("Using SSH: default for simple output commands");
   return false;
 }
 
@@ -85,7 +143,7 @@ class AnsibleSSHDeciderServer {
         tools: [
           {
             name: "execute_command",
-            description: "Execute a command on a remote host, automatically choosing between Ansible (for configuration changes) and SSH (for status/output commands) based on the operation type.",
+            description: "Execute a command on a remote host using intelligent routing: Ansible for privileged operations, configuration changes, and idempotent tasks; SSH for status queries and simple output commands.",
             inputSchema: {
               type: "object",
               properties: {

@@ -5,10 +5,10 @@ This document contains configuration details and setup procedures for various ho
 ## Device Inventory
 
 ### Mac Pro (Primary Server)
-- **IP**: YOUR_DEVICE_IP
+- **IP**: 192.168.1.214
 - **OS**: Debian Linux
 - **SSH Port**: 2220
-- **User**: YOUR_USERNAME
+- **User**: david
 - **Role**: Media server, deduplication processing, MongoDB host
 - **Storage**:
   - 11TB APFS1 (read-only mount)
@@ -17,34 +17,51 @@ This document contains configuration details and setup procedures for various ho
 - **Services**: Jellyfin, MongoDB 8.0, deduplication workers
 
 ### Mac Mini M4 (Development Workstation)
-- **IP**: YOUR_DEVICE_IP
+- **IP**: 192.168.1.5
 - **OS**: macOS
 - **Role**: Development workstation, MCP server host
-- **Services**: Mosquitto MQTT broker, development environment
+- **Services**: Development environment, MCP servers
 
 ### Raspberry Pi 5 (IoT Hub)
-- **IP**: YOUR_DEVICE_IP
+- **IP**: 192.168.1.116
 - **OS**: Raspberry Pi OS
 - **Role**: Home automation, monitoring, edge computing
 
 ### OpenWrt Router (Network Gateway)
-- **IP**: YOUR_ROUTER_IP
+- **IP**: 192.168.1.1
 - **OS**: OpenWrt
 - **Role**: Routing, firewall, ad-blocking, WiFi management
 - **WiFi**: Configurable SSID and password
 - **LAN**: 192.168.1.1/24 network
 
 ### Linode VPS (Cloud Services)
-- **IP**: YOUR_VPS_IP
+- **IP**: 173.255.218.133
 - **OS**: Ubuntu Linux
 - **Role**: Remote access, web services, backup storage
+
+## MCP Server Ecosystem
+
+### Ansible MCP Server
+- **Purpose**: Infrastructure configuration and management
+- **Capabilities**: Playbook execution, device configuration, service deployment
+- **Security**: Input validation, rate limiting, audit logging
+
+### Ansible-SSH Decider
+- **Purpose**: Intelligent command routing between Ansible and SSH
+- **Decision Logic**: Keyword analysis for optimal execution path
+- **Capabilities**: Automatic tool selection, unified interface
+
+### Documents MCP Server
+- **Purpose**: Secure read-only access to Documents folder
+- **Capabilities**: File browsing, content reading, search functionality
+- **Security**: Path validation, size limits, read-only operations
 
 ## Configuration Procedures
 
 ### OpenWrt Router Setup
-1. Access router at YOUR_ROUTER_IP
+1. Access router at 192.168.1.1
 2. Configure WiFi with desired SSID and WPA2 password
-3. Set LAN IP to YOUR_LAN_IP
+3. Set LAN IP to 192.168.1.1
 4. Enable ad-blocking services
 5. Configure firewall rules
 
@@ -66,27 +83,27 @@ This document contains configuration details and setup procedures for various ho
 ### Network Security
 - SSH key-based authentication
 - Firewall rules on OpenWrt router
-- Ansible Vault for sensitive credentials
+- Environment variable configuration for credentials
 - Regular security updates
 
 ## MCP Server Configuration
 
-### Environment Variables (scrubbed for security)
+### Environment Variables (.env file)
 ```bash
-# Ansible MCP Server
-ANSIBLE_HOST_KEY_CHECKING=False
-ANSIBLE_INVENTORY=/path/to/inventory.ini
-ANSIBLE_BASE_PATH=/path/to/ansible/directory
+# Ansible MCP Server Configuration
+ANSIBLE_INVENTORY=inventory.ini
+ANSIBLE_BASE_PATH=/Users/david/Documents/MCPHomeAutomation
 
-# SSH MCP Server
-SSH_USER=YOUR_USERNAME
-SSH_PORT=2220
-SSH_KEY_PATH=~/.ssh/id_rsa
+# Device Credentials (example - use actual values)
+OPENWRT_PASS=your_openwrt_password
+MACPRO_SUDO_PASS=your_sudo_password
 
-# MongoDB MCP Server
-MONGO_URI=mongodb://user:pass@host:port/?authSource=admin
-MONGO_DB=dedup
-MONGO_COLLECTION=file_hashes
+# Python Environment
+PYTHON_EXECUTABLE=/Users/david/Documents/MCPHomeAutomation/.venv/bin/python
+PYTHONPATH=/Users/david/Documents/MCPHomeAutomation
+
+# SQLite Database
+SQLITE_DB_PATH=data/home_automation.db
 ```
 
 ## Troubleshooting Notes
@@ -106,28 +123,32 @@ MONGO_COLLECTION=file_hashes
 - Check inventory file syntax
 - Verify host connectivity
 
-### MongoDB Connection Issues
-- Check authentication credentials
-- Verify network connectivity
-- Confirm database service status
+### MCP Server Issues
+- Check Node.js version (18+)
+- Verify environment variables
+- Review server logs for errors
+
+### Document Access Issues
+- Ensure Documents folder exists
+- Check file permissions
+- Verify path validation settings
 
 ## Recent Configuration Changes
 
-### Mosquitto MQTT Setup
-- Installed via Homebrew on Mac Mini M4
-- Running on default port 1883
-- Replaced Docker-based messaging
+### Virtual Environment Setup
+- Python 3.13.5 virtual environment configured
+- Dependencies installed: requests, python-dotenv, sqlalchemy, pypdf
+- Database initialization scripts updated
 
-### Docker Removal
-- Completely removed Docker from Mac Mini M4
-- Cleaned up binaries, symlinks, and completion files
-- System now uses native services
+### SQLite Database Implementation
+- Replaced potential MongoDB usage with SQLite for home automation data
+- Tables: devices, events, configuration
+- JSON support for flexible data storage
 
-### Deduplication System
-- MongoDB-based file hash storage
-- Parallel worker processes for hashing
-- Systemd service management
-- Real-time progress monitoring
+### MCP Server Updates
+- Documents MCP server added for secure file access
+- Environment variable integration improved
+- Setup verification script created
 
 This configuration guide serves as a reference for setting up and maintaining the home network infrastructure managed through MCP servers.</content>
 <parameter name="filePath">/Users/david/Documents/MCPHomeAutomation/prompts/device_configurations.md

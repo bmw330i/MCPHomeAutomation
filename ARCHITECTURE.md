@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a comprehensive home network infrastructure management system built around the Model Context Protocol (MCP) for intelligent automation and monitoring. The system manages a distributed network of devices including Mac Pros, Raspberry Pis, OpenWrt routers, and cloud servers, with specialized focus on large-scale data deduplication operations.
+This is a comprehensive home network infrastructure management system built around the Model Context Protocol (MCP) for intelligent automation and monitoring. The system manages a distributed network of devices including Mac Pros, Raspberry Pis, OpenWrt routers, and cloud servers, with specialized focus on secure infrastructure management and document access.
 
 ## Core Architecture Components
 
@@ -28,16 +28,8 @@ This is a comprehensive home network infrastructure management system built arou
            │  └─────────────────┘│
            │                     │
            │  ┌─────────────────┐│
-           │  │SSH MCP Server   ││  ← Direct command execution
-           │  └─────────────────┘│
-           │                     │
-           │  ┌─────────────────┐│
-           │  │MongoDB MCP      ││  ← Database operations
+           │  │Documents MCP    ││  ← Secure file access
            │  │Server           ││
-           │  └─────────────────┘│
-           │                     │
-           │  ┌─────────────────┐│
-           │  │LoRa MCP Server  ││  ← Wireless communication for IoT
            │  └─────────────────┘│
            └──────────┬──────────┘
                       │
@@ -57,8 +49,8 @@ This is a comprehensive home network infrastructure management system built arou
            │  ┌─────────────────┐│
            │  │   Databases     ││
            │  │                 ││
-           │  │ • MongoDB 8.0   ││
-           │  │ • Docker        ││
+           │  │ • SQLite        ││
+           │  │ • MongoDB       ││
            │  └─────────────────┘│
            └─────────────────────┘
 ```
@@ -94,56 +86,22 @@ This is a comprehensive home network infrastructure management system built arou
 - Multi-host parallel execution
 - Error handling and rollback
 
-### 3. SSH MCP Server (`ssh-mcp.mjs`)
+### 3. Documents MCP Server (`documents-mcp-server/`)
 
-**Purpose**: Direct SSH command execution with credential management.
+**Purpose**: Secure, read-only access to user's Documents folder.
 
 **Capabilities**:
-- Real-time command execution
-- Non-blocking monitoring operations
-- Interactive session management
-- Background process handling
+- File listing and browsing within Documents directory
+- Document content reading with size limits
+- Content search across documents
+- File metadata retrieval
+- Cross-platform support (macOS, Windows, Linux)
 
 **Security Features**:
-- SSH key-based authentication
-- Connection timeout management
-- Credential isolation per host
-
-### 4. MongoDB MCP Server (`mongo-mcp-server/`)
-
-**Purpose**: Database administration and deduplication data management.
-
-**Capabilities**:
-- Direct MongoDB query execution
-- Index management and optimization
-- Data import/export operations
-- Aggregation pipeline processing
-
-**Specialized Features**:
-- Deduplication hash database management
-- Remote gzip import via SSH tunneling
-- Performance monitoring and statistics
-
-### 5. LoRa MCP Server (`lora-mcp-server/`)
-
-**Purpose**: Wireless LoRa communication management for IoT devices and remote sensors.
-
-**Capabilities**:
-- Board detection and firmware programming
-- LoRa message sending/receiving
-- Network topology management
-- Real-time traffic monitoring
-
-**Hardware Support**:
-- TTGO LoRa32 boards (ground station with LCD)
-- LilyGo T22_V1.1 boards (remote nodes with GPS)
-- 868/915MHz frequency bands
-
-**Key Features**:
-- Automatic board detection via USB
-- Arduino CLI integration for programming
-- Ground station coordination
-- Mesh network support
+- Path validation preventing directory traversal
+- File size limits and extension filtering
+- Read-only operations only
+- Platform-specific Documents folder detection
 
 ## Infrastructure Topology
 
@@ -208,51 +166,45 @@ Internet
 
 ## Data Flow Architecture
 
-### Deduplication Pipeline
+### Infrastructure Management Flow
 
 ```
-Source Files (8TB External)
-        │
-        ▼
-┌─────────────────────┐
-│ Parallel Hashing    │ ← 6 worker processes
-│ (SHA-256 + metadata)│
-└─────────┬───────────┘
-          │
-          ▼
-┌─────────────────────┐
-│ MongoDB Streaming   │ ← Real-time persistence
-│ dedup.file_hashes   │
-└─────────┬───────────┘
-          │
-          ▼
-Target Storage (11TB APFS2)
-```
-
-### Monitoring and Control Flow
-
-```
-MCP Client → Ansible-SSH Decider → [Ansible|SSH|MongoDB] Server → Target Host
+MCP Client → Ansible-SSH Decider → [Ansible|SSH] Server → Target Host
     │               │                        │
     │               │                        │
     └── Status ←────┼── Feedback Loop ───────┼── Execution Results
                    
 - **Command validation**: Input sanitization and timeout controls
 - **Privilege escalation**: Controlled sudo access with passwords
+- **Document access**: Secure read-only file operations
+```
+
+### SQLite Database for Home Automation
+
+```
+Device Data → SQLite Database → MCP Servers
+    │               │
+    │               │
+    └── Configuration ←── Environment Variables
+                   
+- **Device tracking**: IP addresses, hostnames, device types
+- **Event logging**: Command execution history and status
+- **Configuration storage**: System settings and preferences
+```
 
 ## Performance Characteristics
 
-### Deduplication Processing
-- **Workers**: 6 parallel processes
-- **Throughput**: Variable based on file sizes (large files: 6-8GB batches)
-- **Persistence**: MongoDB streaming with batch commits
-- **Monitoring**: Real-time progress tracking
-
 ### System Resources
 - **Memory**: 62GB available, typical usage 2-3GB
-- **CPU**: 6-core system, load average 6.0 during processing
+- **CPU**: 6-core system, load average varies by operation
 - **Storage**: 22TB total capacity across multiple volumes
 - **Network**: Gigabit Ethernet with SSH optimization
+
+### MCP Server Performance
+- **Response Time**: Sub-second for most operations
+- **Concurrent Operations**: Multiple simultaneous requests supported
+- **Resource Usage**: Lightweight Node.js processes
+- **Scalability**: Horizontal scaling through additional MCP servers
 
 ## Operational Modes
 
@@ -271,9 +223,9 @@ Playbook Selection → Inventory Parsing → Parallel Execution → Validation
 Host Selection → Command Execution → Real-time Output → Completion
 ```
 
-### 4. Database Operations
+### 4. Document Access Operations
 ```
-Query Construction → MongoDB Execution → Result Processing → Analytics
+Path Validation → File Reading → Content Processing → Results
 ```
 
 ## Extension Points
@@ -291,18 +243,18 @@ Query Construction → MongoDB Execution → Result Processing → Analytics
 4. Test connectivity and operations
 
 ### Database Integration
-1. Design collection schemas
-2. Implement query optimization
+1. Design SQLite schema for new data types
+2. Implement data access patterns
 3. Add monitoring and alerting
 4. Integrate with existing workflows
 
 ## Monitoring and Observability
 
 ### Key Metrics
-- **Deduplication Progress**: Files processed vs total (41,650/776,898)
 - **System Health**: CPU, memory, disk usage
 - **Database Performance**: Query latency, connection status
 - **Network Status**: Connectivity, bandwidth utilization
+- **MCP Server Health**: Response times, error rates
 
 ### Logging Strategy
 - **Application Logs**: Structured logging with levels
@@ -313,16 +265,191 @@ Query Construction → MongoDB Execution → Result Processing → Analytics
 ## Disaster Recovery
 
 ### Backup Strategy
-- **Incremental Backups**: Every 5 minutes during processing
-- **Multiple Locations**: Local and remote storage
-- **Verification**: Automated integrity checks
-- **Retention**: Configurable backup lifecycle
+- **Configuration Backups**: Regular environment and inventory backups
+- **Database Backups**: SQLite database snapshots
+- **Document Backups**: User data protection procedures
+- **System Recovery**: Host-level disaster recovery
 
 ### Recovery Procedures
-- **Process Restart**: Automatic resumption capabilities
-- **Data Recovery**: Backup restoration workflows
+- **Process Restart**: Automatic MCP server recovery
+- **Data Recovery**: Database restoration workflows
 - **System Recovery**: Host-level disaster recovery
-- **Database Recovery**: MongoDB backup and restore
+- **Configuration Recovery**: Environment variable restoration
 
-This architecture provides a robust, scalable foundation for managing complex home network infrastructure with intelligent automation, comprehensive monitoring, and reliable data processing capabilities.</content>
+This architecture provides a robust, scalable foundation for managing complex home network infrastructure with intelligent automation, comprehensive monitoring, and secure document access capabilities.
+
+## Infrastructure Topology
+
+### Network Architecture
+
+```
+Internet
+    │
+    ▼
+┌─────────────┐     ┌─────────────┐
+│  Linode VPS │     │  OpenWrt    │
+│ 173.255.    │     │ 192.168.1.1 │
+│ 218.133     │     │   Router    │
+└─────┬───────┘     └─────┬───────┘
+      │                   │
+      └─────────┬─────────┘
+                │
+        ┌───────▼───────┐
+        │   Local LAN   │
+        │ 192.168.1.0/24│
+        └───────┬───────┘
+                │
+    ┌───────────┼───────────┐
+    │           │           │
+┌───▼───┐   ┌───▼───┐   ┌───▼───┐
+│Mac Pro│   │Mac Mini│  │RPi 5  │
+│.214   │   │ .5    │   │ .116  │
+│Deduplication│ │Dev     │   │IoT Hub │
+│MongoDB     │ │Workstation│ │         │
+└───────┘   └───────┘   └───────┘
+```
+
+### Device Specifications
+
+#### Mac Pro (Primary Server)
+- **IP**: 192.168.1.214
+- **OS**: Debian Linux
+- **Role**: Media server, deduplication processing, MongoDB host
+- **Storage**: 11TB APFS1 (read-only), 11TB APFS2 (ext4 target), 8TB external
+- **Services**: Jellyfin, MongoDB 8.0, deduplication workers
+
+#### Mac Mini M4 (Development)
+- **IP**: 192.168.1.5
+- **OS**: macOS
+- **Role**: Development workstation, MCP server host
+- **Storage**: Internal SSD with external USB support
+
+#### Raspberry Pi 5 (IoT Hub)
+- **IP**: 192.168.1.116
+- **OS**: Raspberry Pi OS
+- **Role**: Home automation, monitoring, edge computing
+
+#### OpenWrt Router (Network Gateway)
+- **IP**: 192.168.1.1
+- **OS**: OpenWrt
+- **Role**: Routing, firewall, ad-blocking, WiFi management
+
+#### Linode VPS (Cloud Services)
+- **IP**: 173.255.218.133
+- **OS**: Ubuntu Linux
+- **Role**: Remote access, web services, backup storage
+
+## Data Flow Architecture
+
+### Infrastructure Management Flow
+
+```
+MCP Client → Ansible-SSH Decider → [Ansible|SSH] Server → Target Host
+    │               │                        │
+    │               │                        │
+    └── Status ←────┼── Feedback Loop ───────┼── Execution Results
+                   
+- **Command validation**: Input sanitization and timeout controls
+- **Privilege escalation**: Controlled sudo access with passwords
+- **Document access**: Secure read-only file operations
+```
+
+### SQLite Database for Home Automation
+
+```
+Device Data → SQLite Database → MCP Servers
+    │               │
+    │               │
+    └── Configuration ←── Environment Variables
+                   
+- **Device tracking**: IP addresses, hostnames, device types
+- **Event logging**: Command execution history and status
+- **Configuration storage**: System settings and preferences
+```
+
+## Performance Characteristics
+
+### System Resources
+- **Memory**: 62GB available, typical usage 2-3GB
+- **CPU**: 6-core system, load average varies by operation
+- **Storage**: 22TB total capacity across multiple volumes
+- **Network**: Gigabit Ethernet with SSH optimization
+
+### MCP Server Performance
+- **Response Time**: Sub-second for most operations
+- **Concurrent Operations**: Multiple simultaneous requests supported
+- **Resource Usage**: Lightweight Node.js processes
+- **Scalability**: Horizontal scaling through additional MCP servers
+
+## Operational Modes
+
+### 1. Intelligent Automation (Primary)
+```
+User Request → Keyword Analysis → Tool Selection → Execution → Results
+```
+
+### 2. Direct Ansible Operations
+```
+Playbook Selection → Inventory Parsing → Parallel Execution → Validation
+```
+
+### 3. Direct SSH Commands
+```
+Host Selection → Command Execution → Real-time Output → Completion
+```
+
+### 4. Document Access Operations
+```
+Path Validation → File Reading → Content Processing → Results
+```
+
+## Extension Points
+
+### Adding New MCP Servers
+1. Implement MCP protocol interface
+2. Define tool schemas and handlers
+3. Add to `mcp.json` configuration
+4. Update documentation and tool selection logic
+
+### Infrastructure Expansion
+1. Add host to Ansible inventory
+2. Configure SSH access and keys
+3. Update environment variables
+4. Test connectivity and operations
+
+### Database Integration
+1. Design SQLite schema for new data types
+2. Implement data access patterns
+3. Add monitoring and alerting
+4. Integrate with existing workflows
+
+## Monitoring and Observability
+
+### Key Metrics
+- **System Health**: CPU, memory, disk usage
+- **Database Performance**: Query latency, connection status
+- **Network Status**: Connectivity, bandwidth utilization
+- **MCP Server Health**: Response times, error rates
+
+### Logging Strategy
+- **Application Logs**: Structured logging with levels
+- **System Logs**: OS-level monitoring and alerts
+- **Audit Logs**: Command execution tracking
+- **Performance Logs**: Metrics collection and analysis
+
+## Disaster Recovery
+
+### Backup Strategy
+- **Configuration Backups**: Regular environment and inventory backups
+- **Database Backups**: SQLite database snapshots
+- **Document Backups**: User data protection procedures
+- **System Recovery**: Host-level disaster recovery
+
+### Recovery Procedures
+- **Process Restart**: Automatic MCP server recovery
+- **Data Recovery**: Database restoration workflows
+- **System Recovery**: Host-level disaster recovery
+- **Configuration Recovery**: Environment variable restoration
+
+This architecture provides a robust, scalable foundation for managing complex home network infrastructure with intelligent automation, comprehensive monitoring, and secure document access capabilities.</content>
 <parameter name="filePath">/Users/david/Documents/Ansible/ARCHITECTURE.md

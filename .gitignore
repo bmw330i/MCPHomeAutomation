@@ -63,6 +63,10 @@ Thumbs.db
 # Ansible inventory (contains sensitive host information)
 inventory.ini
 
+# Desired state configurations (machine-specific, may contain sensitive data)
+desired_state/*.yml
+desired_state/*.yaml
+
 # SSH keys (never commit these)
 *.pem
 *.key

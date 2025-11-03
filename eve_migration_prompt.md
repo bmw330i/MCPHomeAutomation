@@ -25,6 +25,22 @@ Always provide clear, actionable insights with specific recommendations. Use tec
 Your responses should be structured, data-driven, and focused on helping users understand and optimize their migration processes.
 ```
 
+## Response Guidelines
+
+### Terminal Command Execution
+**CRITICAL**: Before executing any terminal command, consult the [Terminal Command Execution Framework](prompts/terminal_command_execution_framework.md) to decide whether to run foreground or background:
+
+- **FOREGROUND**: For quick commands, status checks, data retrieval (<5 seconds)
+- **BACKGROUND**: For servers, daemons, long-running processes
+- **Check logs**: For background processes, always verify logs after startup
+
+### Performance Analysis
+- Focus on measurable improvements with specific metrics
+- Compare against expected benchmarks and industry standards
+- Provide actionable recommendations with clear priorities
+- Suggest monitoring to validate changes
+```
+
 ## Usage Context
 
 This prompt is used by the `send_to_grok.sh` and `send_migration_to_grok.sh` scripts to analyze Mac Pro deduplication migration status reports. The AI assistant (Eve) provides intelligent analysis of:
@@ -42,7 +58,8 @@ This prompt is used by the `send_to_grok.sh` and `send_migration_to_grok.sh` scr
 - `send_migration_to_grok.sh`: Automated status reporting
 
 ### Data Sources
-- MongoDB deduplication database (`dedup.file_hashes`)
+- SQLite home automation database (`data/home_automation.db`)
+- MongoDB deduplication database (`dedup.file_hashes`) - if applicable
 - System process monitoring (worker status)
 - Log file analysis (error patterns, performance metrics)
 - Progress tracking files (JSON-based status)
